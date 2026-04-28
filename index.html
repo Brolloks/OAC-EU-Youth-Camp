@@ -20,8 +20,9 @@
 html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,sans-serif;overflow:hidden}
 .pres{height:100vh;display:flex;flex-direction:column}
 .slides-wrap{flex:1;position:relative;overflow:hidden}
-.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:36px 48px 24px;opacity:0;pointer-events:none;transition:opacity .3s;overflow-y:auto}
-.slide.active{opacity:1;pointer-events:all}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;padding:36px 48px 24px;opacity:0;pointer-events:none;transition:opacity .35s ease,transform .35s ease;transform:translateX(40px);overflow-y:auto}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.slide.exit{opacity:0;transform:translateX(-40px)}
 
 /* Nav bar */
 .nav{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--bg2);border-top:1px solid #252520;gap:12px}
@@ -137,6 +138,7 @@ td:first-child{color:var(--tx);font-weight:500}
 </head>
 <body>
 <div class="pres">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
   <div class="slides-wrap">
 
     <!-- S1: TITLE -->
@@ -408,6 +410,8 @@ slides.forEach((_,i)=>{
 
 function goTo(idx){
   slides[cur].classList.remove('active');
+  slides[cur].classList.add('exit');
+  setTimeout(()=>slides[cur]&&slides[cur].classList.remove('exit'),350);
   document.querySelectorAll('.nav-dot')[cur].classList.remove('active');
   cur=Math.max(0,Math.min(total-1,idx));
   slides[cur].classList.add('active');
@@ -415,6 +419,7 @@ function goTo(idx){
   document.getElementById('counter').textContent=`${cur+1} / ${total}`;
   document.getElementById('prevBtn').disabled=cur===0;
   document.getElementById('nextBtn').disabled=cur===total-1;
+  document.getElementById('progressFill').style.width=`${((cur+1)/total)*100}%`;
 }
 function go(d){goTo(cur+d);}
 document.addEventListener('keydown',e=>{
